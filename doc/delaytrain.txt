@@ -1,0 +1,118 @@
+*delaytrain.txt* DelayTrain
+*delaytrain.nvim*
+
+Author:   James Ford <james@jamesford.io>
+Version:  1.0.0
+Homepage: <>
+
+=============================================================================
+INTRODUCTION                                                       *delaytrain*
+
+When learning how to use Vim keybindings, sometimes it's helpful to avoid 
+repetitive keypresses. For example, repetitive use of hjkl or arrow keys can 
+often be replaced with a numeric prefix, or an even better key to navigate 
+exactly where you want to go.
+
+To help train your muscle memory, most people suggest un-mapping these keys
+to avoid using them completely. But there are certain cases where hjkl may
+be necessary and another key combination would be overkill.
+
+DelayTrain helps train this muscle memory by preventing a keypress from 
+being used after a certain amount of repeated usage inside a timeframe, 
+rather than disabling the key completely. This way you can still go about 
+your work with a gentle reminder that there might be a better way to do 
+what you want.
+
+==============================================================================
+USAGE                                                         *delaytrain-usage*
+
+Most people will be training with hjkl and arrow keys, so for a default setup
+you can simply run:
+>
+    require('delaytrain').setup()
+<
+
+==============================================================================
+CONFIGURATION                                         *delaytrain-configuration*
+
+For more granular configuration and additional keymaps, you can pass the
+following configuration (default settings included):
+>
+    require('delaytrain').setup {
+        delay_ms = 1000,  -- How long repeated usage of a key should be prevented
+        grace_period = 1, -- How many repeated keypresses are allowed
+        keys = {          -- Which keys (in which modes) should be delayed
+            ['nv'] = {'h', 'j', 'k', 'l'},
+            ['nvi'] = {'<Left>', '<Down>', '<Up>', '<Right>'},
+        },
+    }
+<
+Keep in mind that the `delay_ms` timer starts on the FIRST keypress and not the 
+final `grace_period` keypress. For example (with default settings) if you hit j,
+the timer starts immediately. If you hit j again after 500ms, the key will not
+work. If you wait ANOTHER 500ms and hit j again, it will work. Likewise, if
+you hit j, wait 1000ms, and hit j again, both keypresses will work.
+
+With an increased `grace_period`, you can hit a key `grace_period` amount of times
+inside `delay_ms` before it stops working.
+
+`grace_period` and `delay_ms` only affect the current key being pressed. With
+the default settings, if you hit j and then hit k after 500ms, both keypresses
+will work. If you wait another 200ms and hit j again, the keypress will not
+work.
+
+------------------------------------------------------------------------------
+MAPPINGS                                                   *delaytrain-mappings*
+
+The keys option allows you to delay different keypresses in different modes.
+This takes the following KV pair:
+>
+    ['list_of_applicable_modes'] = {'keys', 'you', 'want', 'delayed'},
+<
+Modes can be added based on their short-names (ex: normal is 'n', insert is 
+'i') and multiple modes can be added to a single keymap.
+
+This option ties into a call to |vim.keymap.set()|, so mode short-names and
+key names should match what is possible in that function.
+
+
+------------------------------------------------------------------------------
+OPTIONS                                                     *delaytrain-options*
+
+Global options can be modified to change delay/grace period settings on the
+fly.
+
+------------------------------------------------------------------------------
+g:delaytrain_delay_ms~                                   *g:delaytrain_delay_ms*
+
+How long repeated usage of a key should be prevented. Keep in mind that the 
+timer starts on the FIRST keypress and delays repeated usage of a key based on
+`grace_period` in this timeframe.
+
+    Type:               |Number|
+    Default value:      `1000`
+
+------------------------------------------------------------------------------
+g:delaytrain_grace_period~                           *g:delaytrain_grace_period*
+
+How many repeated keypresses are allowed inside the `delay_ms` timeframe. By
+default this is 1, so you can press a key 1 time inside `delay_ms` before it's
+disabled. Setting this value to 0 will completely disable the key.
+
+    Type:               |Number|
+    Default value:      `1`
+
+==============================================================================
+COMMANDS                                                   *delaytrain-commands*
+
+:DelayTrainEnable                                            *:DelayTrainEnable*
+                Enable DelayTrain by setting defined keymaps
+
+:DelayTrainDisable                                          *:DelayTrainDisable*
+                Disable DelayTrain by deleting defined keymaps
+
+:DelayTrainToggle                                            *:DelayTrainToggle*
+                Toggle DelayTrain by setting/deleting keymaps
+
+------------------------------------------------------------------------------
+vim:tw=78:ts=8:ft=help:norl:

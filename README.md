@@ -1,12 +1,10 @@
 <div align="center">
-# DelayTrain
-_Train yourself to stop repeating keys... gently_
-
-[How does it work?](#how-does-it-work) • [Installation](#installation) 
-• [Configuration](#configuration) • [Commands](#commands) 
-• [Contributing](#contributing) 
-
-TODO: quick demo gif ~/Videos/delaytrain.gif
+  <h1>DelayTrain</h1>
+  <i>Train yourself to stop repeating keys... gently</i>
+  [How does it work?](#how-does-it-work) • [Installation](#installation) 
+  • [Configuration](#configuration) • [Commands](#commands) 
+  • [Contributing](#contributing) 
+  TODO: quick demo gif ~/Videos/delaytrain.gif
 </div>
 
 ## "Stop using arrow keys!" "Stop using hjkl!"
@@ -71,14 +69,14 @@ this still works.
 
 | Keypress   | Time        | Grace Period | Does it work? |
 | ---------- | ----------- | ------------ | ------------- |
-| `j'        | 0ms         | 1            | Yes           |
-| `j'        | 200ms       | 2            | Yes           |
-| `h'        | 500ms       | 1            | Yes           |
-| `j'        | 700ms       | 3            | No            |
-| `h'        | 1000ms      | 2            | Yes           |
-| `j'        | 1200ms      | 1            | Yes           |
-| `h'        | 1400ms      | 3            | No            |
-| `h'        | 1500ms      | 1            | Yes           |
+| `j`        | 0ms         | 1            | Yes           |
+| `j`        | 200ms       | 2            | Yes           |
+| `h`        | 500ms       | 1            | Yes           |
+| `j`        | 700ms       | 3            | No            |
+| `h`        | 1000ms      | 2            | Yes           |
+| `j`        | 1200ms      | 1            | Yes           |
+| `h`        | 1400ms      | 3            | No            |
+| `h`        | 1500ms      | 1            | Yes           |
 
 
 ## Installation
@@ -86,14 +84,14 @@ this still works.
 Install with [vim-plug](https://github.com/junegunn/vim-plug):
 
 ```vim
-Plug '[TODO GITHUB NAME]/delaytrain.nvim'
+Plug 'ja-ford/delaytrain.nvim'
 ```
 
 or with [packer](https://github.com/wbthomason/packer.nvim):
 
 ```lua
   -- Delay repeat execution of certain keys
-  use '[TODO GITHUB NAME]/delaytrain.nvim'
+  use 'ja-ford/delaytrain.nvim'
 ```
 
 For the default setup (see defaults below), you can simply place the following

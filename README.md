@@ -1,10 +1,15 @@
 <div align="center">
-  <h1>DelayTrain</h1>
-  <i>Train yourself to stop repeating keys... gently</i>
-  [How does it work?](#how-does-it-work) • [Installation](#installation) 
-  • [Configuration](#configuration) • [Commands](#commands) 
-  • [Contributing](#contributing) 
-  TODO: quick demo gif ~/Videos/delaytrain.gif
+<h1>DelayTrain</h1>
+<p><i>Train yourself to stop repeating keys... gently</i></p>
+  <p>
+    <a href="#how-does-it-work">How does it work?</a>
+    • <a href="#installation">Installation</a>
+    • <a href="#configuration">Configuration</a>
+    • <a href="#commands">Commands</a>
+    •  <a href="#contributing">Contributing</a>
+  </p>
+
+  <img src="https://user-images.githubusercontent.com/114582891/192774339-4dc2c4a1-b527-4288-bf5a-9342a99003b9.gif"></img>
 </div>
 
 ## "Stop using arrow keys!" "Stop using hjkl!"

@@ -45,6 +45,8 @@ following configuration (default settings included):
             ['nv'] = {'h', 'j', 'k', 'l'},
             ['nvi'] = {'<Left>', '<Down>', '<Up>', '<Right>'},
         },
+        ignore_filestypes = {}, -- Example: set to {"help", "NvimTree"} to
+                               -- disable the plugin for help and NvimTree
     }
 <
 Keep in mind that the `delay_ms` timer starts on the FIRST keypress and not the 

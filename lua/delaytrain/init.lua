@@ -6,6 +6,7 @@ vim.g.delaytrain_grace_period = 1
 -- Map of keys to their individual current grace period
 -- This keeps track of how many times a key has been pressed
 local current_grace_period_intervals = {}
+local ignore_filetypes = {}
 
 local keymaps = {
     ['nv'] = {'h', 'j', 'k', 'l'},
@@ -14,8 +15,31 @@ local keymaps = {
 
 local is_enabled = false
 
+local function has_val(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function sendkeys(key)
+    vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes(key, true, false, true),
+    'n', 
+    false
+    )
+end
+
 function M.try_delay_keypress(key)
     current_interval = current_grace_period_intervals[key]
+
+    if has_val(ignore_filetypes, vim.o.filetype) then
+        sendkeys(key)
+        return
+    end
 
     -- Start a timer on the first keypress to reset the interval
     if current_interval == 0 then
@@ -27,12 +51,7 @@ function M.try_delay_keypress(key)
     -- Pass the key through only if we haven't reached the grace period
     if current_interval < vim.g.delaytrain_grace_period then
         current_grace_period_intervals[key] = current_interval + 1
-
-        vim.api.nvim_feedkeys(
-        vim.api.nvim_replace_termcodes(key, true, false, true),
-        'n', 
-        false
-        )
+        sendkeys(key)
     end
 end
 
@@ -45,6 +64,8 @@ function M.setup(opts)
         if opts.grace_period then
             vim.g.delaytrain_grace_period = opts.grace_period
         end
+
+        ignore_filetypes = vim.tbl_extend("force", ignore_filetypes, opts.ignore_filetypes)
 
         if opts.keys then
             keymaps = opts.keys

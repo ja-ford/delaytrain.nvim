@@ -15,34 +15,23 @@ local keymaps = {
 
 local is_enabled = false
 
-local function has_val(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
-end
-
-local function sendkeys(key)
-    vim.api.nvim_feedkeys(
-    vim.api.nvim_replace_termcodes(key, true, false, true),
-    'n', 
-    false
-    )
-end
-
 function M.try_delay_keypress(key)
     current_interval = current_grace_period_intervals[key]
 
+    -- ignore user defined patterns
     for _,ign_ft in ipairs(ignore_filetypes) do
         if vim.o.filetype:match(ign_ft) then
-            sendkeys(key)
+            M.send_keypress(key)
             return
         end
     end
-    --
+
+    -- Ingore on macro execution
+    if vim.fn.reg_executing() ~= "" then
+        M.send_keypress(key)
+        return
+    end
+
     -- Start a timer on the first keypress to reset the interval
     if current_interval == 0 then
         vim.loop.new_timer():start(vim.g.delaytrain_delay_ms, 0, function()
@@ -53,8 +42,16 @@ function M.try_delay_keypress(key)
     -- Pass the key through only if we haven't reached the grace period
     if current_interval < vim.g.delaytrain_grace_period then
         current_grace_period_intervals[key] = current_interval + 1
-        sendkeys(key)
+        M.send_keypress(key)
     end
+end
+
+function M.send_keypress(key)
+    vim.api.nvim_feedkeys(
+        vim.api.nvim_replace_termcodes(key, true, false, true),
+        'n', 
+        false
+    )
 end
 
 function M.setup(opts)

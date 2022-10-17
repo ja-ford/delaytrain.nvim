@@ -45,8 +45,8 @@ following configuration (default settings included):
             ['nv'] = {'h', 'j', 'k', 'l'},
             ['nvi'] = {'<Left>', '<Down>', '<Up>', '<Right>'},
         },
-        ignore_filestypes = {}, -- Example: set to {"help", "NvimTree"} to
-                               -- disable the plugin for help and NvimTree
+        ignore_filestypes = {}, -- Example: set to {"help", "NvimTr*"} to
+                                -- disable the plugin for help and NvimTree
     }
 <
 Keep in mind that the `delay_ms` timer starts on the FIRST keypress and not the 
@@ -62,6 +62,10 @@ inside `delay_ms` before it stops working.
 the default settings, if you hit j and then hit k after 500ms, both keypresses
 will work. If you wait another 200ms and hit j again, the keypress will not
 work.
+
+You can define a list of filetypes that will be ignored by delaytrain using
+`ignore_filestypes`. The option accepts a list of strings or patterns. Tip:
+you can find the filetype for the current buffer using the command `:set ft?`
 
 ------------------------------------------------------------------------------
 MAPPINGS                                                   *delaytrain-mappings*

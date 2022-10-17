@@ -36,11 +36,13 @@ end
 function M.try_delay_keypress(key)
     current_interval = current_grace_period_intervals[key]
 
-    if has_val(ignore_filetypes, vim.o.filetype) then
-        sendkeys(key)
-        return
+    for _,ign_ft in ipairs(ignore_filetypes) do
+        if vim.o.filetype:match(ign_ft) then
+            sendkeys(key)
+            return
+        end
     end
-
+    --
     -- Start a timer on the first keypress to reset the interval
     if current_interval == 0 then
         vim.loop.new_timer():start(vim.g.delaytrain_delay_ms, 0, function()
@@ -65,7 +67,7 @@ function M.setup(opts)
             vim.g.delaytrain_grace_period = opts.grace_period
         end
 
-        ignore_filetypes = vim.tbl_extend("force", ignore_filetypes, opts.ignore_filetypes)
+        ignore_filetypes = opts.ignore_filetypes or {}
 
         if opts.keys then
             keymaps = opts.keys

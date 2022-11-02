@@ -6,6 +6,7 @@ vim.g.delaytrain_grace_period = 1
 -- Map of keys to their individual current grace period
 -- This keeps track of how many times a key has been pressed
 local current_grace_period_intervals = {}
+local ignore_filetypes = {}
 
 local keymaps = {
     ['nv'] = {'h', 'j', 'k', 'l'},
@@ -16,6 +17,14 @@ local is_enabled = false
 
 function M.try_delay_keypress(key)
     current_interval = current_grace_period_intervals[key]
+
+    -- ignore user defined patterns
+    for _,ign_ft in ipairs(ignore_filetypes) do
+        if vim.o.filetype:match(ign_ft) then
+            M.send_keypress(key)
+            return
+        end
+    end
 
     -- Ingore on macro execution
     if vim.fn.reg_executing() ~= "" then
@@ -54,6 +63,8 @@ function M.setup(opts)
         if opts.grace_period then
             vim.g.delaytrain_grace_period = opts.grace_period
         end
+
+        ignore_filetypes = opts.ignore_filetypes or {}
 
         if opts.keys then
             keymaps = opts.keys

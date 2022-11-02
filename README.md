@@ -119,13 +119,13 @@ default DelayTrain mappings are included below:
             ['nv'] = {'h', 'j', 'k', 'l'},
             ['nvi'] = {'<Left>', '<Down>', '<Up>', '<Right>'},
         },
-        ignore_filestypes = {}, -- Example: set to {"help", "NvimTr*"} to
+        ignore_filetypes = {}, -- Example: set to {"help", "NvimTr*"} to
                                 -- disable the plugin for help and NvimTree
     }
 ```
 
 You can define a list of filetypes that will be ignored by delaytrain using
-`ignore_filestypes`. The option accepts a list of strings or patterns. 
+`ignore_filetypes`. The option accepts a list of strings or patterns. 
 Tip: you can find the filetype for the current buffer using the command `:set ft?`
 
 ### Mappings

@@ -86,10 +86,10 @@ function M.enable()
             -- Check that keys haven't been remapped (e.g. hjkl to dtrn)
             local keypress = ""
             local remapped = vim.fn.maparg(key, mode_array[1])
-            if remapped ~= "" then
-              keypress = remapped
-            else
+            if remapped == "" then
               keypress = key
+            else
+              keypress = remapped
             end
             -- Set the current grace period for the given key
             current_grace_period_intervals[key] = 0

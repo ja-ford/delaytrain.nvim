@@ -15,20 +15,20 @@ local keymaps = {
 
 local is_enabled = false
 
-function M.try_delay_keypress(key)
+function M.try_delay_keypress(key, keypress)
     current_interval = current_grace_period_intervals[key]
 
     -- ignore user defined patterns
     for _,ign_ft in ipairs(ignore_filetypes) do
         if vim.o.filetype:match(ign_ft) then
-            M.send_keypress(key)
+            M.send_keypress(keypress)
             return
         end
     end
 
     -- Ingore on macro execution
     if vim.fn.reg_executing() ~= "" then
-        M.send_keypress(key)
+        M.send_keypress(keypress)
         return
     end
 
@@ -42,13 +42,13 @@ function M.try_delay_keypress(key)
     -- Pass the key through only if we haven't reached the grace period
     if current_interval < vim.g.delaytrain_grace_period then
         current_grace_period_intervals[key] = current_interval + 1
-        M.send_keypress(key)
+        M.send_keypress(keypress)
     end
 end
 
-function M.send_keypress(key)
+function M.send_keypress(keypress)
     vim.api.nvim_feedkeys(
-        vim.api.nvim_replace_termcodes(key, true, false, true),
+        vim.api.nvim_replace_termcodes(keypress, true, false, true),
         'n', 
         false
     )
@@ -83,10 +83,18 @@ function M.enable()
             table.insert(mode_array, mode)
         end
         for _, key in ipairs(keys) do
+            -- Check that keys haven't been remapped (e.g. hjkl to dtrn)
+            local keypress = ""
+            local remapped = vim.fn.maparg(key, mode_array[1])
+            if remapped ~= "" then
+              keypress = remapped
+            else
+              keypress = key
+            end
             -- Set the current grace period for the given key
             current_grace_period_intervals[key] = 0
 
-            vim.keymap.set(mode_array, key, function() M.try_delay_keypress(key) end, {expr = true})
+            vim.keymap.set(mode_array, key, function() M.try_delay_keypress(key, keypress) end, {expr = true})
         end
     end
 end

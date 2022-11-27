@@ -77,24 +77,43 @@ end
 function M.enable()
     is_enabled = true
 
+    -- Get an array of all the keys we want to delay regardless of remap status
+    local function get_keypress_array (key, mode_array)
+        local keypress_array = {}
+        for _, mode in ipairs(mode_array) do
+            local keypress = key
+            local remapped = vim.fn.maparg(key, mode, false, true).rhs
+            if remapped then
+                keypress = remapped
+            end
+
+            -- If keypress values differ across modes, add the new value here
+            if keypress_array[keypress] then
+                table.insert(keypress_array[keypress], mode)
+            -- Append any mode that has an equal value to previously seen modes
+            else
+                keypress_array[keypress] = {mode}
+            end
+        end
+
+      -- If the keypress value is equal across modes, the array will only have one value,
+      -- so vim.keymap.set will be called once with a copy of the original mode_array
+      return keypress_array
+    end
+
     for modes, keys in pairs(keymaps) do
         mode_array = {}
         for mode in modes:gmatch"."  do
             table.insert(mode_array, mode)
         end
-        for _, key in ipairs(keys) do
-            -- Check that keys haven't been remapped (e.g. hjkl to dtrn)
-            local keypress = ""
-            local remapped = vim.fn.maparg(key, mode_array[1], false, true).rhs
-            if remapped == "" or remapped == nil then
-              keypress = key
-            else
-              keypress = remapped
-            end
-            -- Set the current grace period for the given key
-            current_grace_period_intervals[key] = 0
 
-            vim.keymap.set(mode_array, key, function() M.try_delay_keypress(key, keypress) end, {expr = true})
+        for _, key in ipairs(keys) do
+            local keypress_array = get_keypress_array(key, mode_array)
+            for keypress, key_modes in pairs(keypress_array) do
+                -- Set the current grace period for the given key
+                current_grace_period_intervals[key] = 0
+                vim.keymap.set(key_modes, key, function() M.try_delay_keypress(key, keypress) end, {expr = true})
+            end
         end
     end
 end

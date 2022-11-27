@@ -85,8 +85,8 @@ function M.enable()
         for _, key in ipairs(keys) do
             -- Check that keys haven't been remapped (e.g. hjkl to dtrn)
             local keypress = ""
-            local remapped = vim.fn.maparg(key, mode_array[1])
-            if remapped == "" then
+            local remapped = vim.fn.maparg(key, mode_array[1], false, true).rhs
+            if remapped == "" or remapped == nil then
               keypress = key
             else
               keypress = remapped

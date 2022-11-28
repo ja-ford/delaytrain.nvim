@@ -15,6 +15,8 @@ local keymaps = {
 
 local is_enabled = false
 
+local custom_mappings = {}
+
 function M.try_delay_keypress(key, keypress)
     current_interval = current_grace_period_intervals[key]
 
@@ -89,16 +91,22 @@ function M.enable()
 
             -- If keypress values differ across modes, add the new value here
             if keypress_array[keypress] then
-                table.insert(keypress_array[keypress], mode)
-            -- Append any mode that has an equal value to previously seen modes
+                table.insert(keypress_array[keypress].modes, mode)
             else
-                keypress_array[keypress] = {mode}
+                keypress_array[keypress] = {modes = {mode}, isremap = remapped ~= nil}
             end
         end
 
-      -- If the keypress value is equal across modes, the array will only have one value,
-      -- so vim.keymap.set will be called once with a copy of the original mode_array
       return keypress_array
+    end
+
+    -- Preserve old keymap so it can be restored after calling M.disable()
+    local function preserve_custom_mappings(lhs, rhs, modes)
+        if custom_mappings[lhs] then
+            table.insert(custom_mappings[lhs], {rhs = rhs, modes = modes})
+        else
+            custom_mappings[lhs] = {{rhs = rhs, modes = modes}}
+        end
     end
 
     for modes, keys in pairs(keymaps) do
@@ -109,13 +117,18 @@ function M.enable()
 
         for _, key in ipairs(keys) do
             local keypress_array = get_keypress_array(key, mode_array)
-            for keypress, key_modes in pairs(keypress_array) do
+            for keypress, key_data in pairs(keypress_array) do
+                if key_data.isremap then
+                  preserve_custom_mappings(key, keypress, key_data.modes)
+                end
                 -- Set the current grace period for the given key
                 current_grace_period_intervals[key] = 0
-                vim.keymap.set(key_modes, key, function() M.try_delay_keypress(key, keypress) end, {expr = true})
+                vim.keymap.set(key_data.modes, key, function() M.try_delay_keypress(key, keypress) end, {expr = true})
             end
         end
     end
+
+
 end
 
 function M.disable()
@@ -128,6 +141,12 @@ function M.disable()
         end
         for _, key in ipairs(keys) do
             vim.keymap.del(mode_array, key)
+            -- Re-enable custom mappings
+            if custom_mappings[key] then
+                for _, map_values in pairs(custom_mappings[key]) do
+                  vim.keymap.set(map_values.modes, key, map_values.rhs)
+                end
+            end
         end
     end
 end

@@ -80,8 +80,8 @@ function M.enable()
     is_enabled = true
 
     -- Get an array of all the keys we want to delay regardless of remap status
-    local function get_keypress_array (key, mode_array)
-        local keypress_array = {}
+    local function get_key_mappings (key, mode_array)
+        local key_mappings = {}
         for _, mode in ipairs(mode_array) do
             local keypress = key
             local remapped = vim.fn.maparg(key, mode, false, true).rhs
@@ -90,14 +90,14 @@ function M.enable()
             end
 
             -- If keypress values differ across modes, add the new value here
-            if keypress_array[keypress] then
-                table.insert(keypress_array[keypress].modes, mode)
+            if key_mappings[keypress] then
+                table.insert(key_mappings[keypress].modes, mode)
             else
-                keypress_array[keypress] = {modes = {mode}, isremap = remapped ~= nil}
+                key_mappings[keypress] = {modes = {mode}, isremap = remapped ~= nil}
             end
         end
 
-      return keypress_array
+      return key_mappings
     end
 
     -- Preserve old keymap so it can be restored after calling M.disable()
@@ -116,8 +116,8 @@ function M.enable()
         end
 
         for _, key in ipairs(keys) do
-            local keypress_array = get_keypress_array(key, mode_array)
-            for keypress, key_data in pairs(keypress_array) do
+            local key_mappings = get_key_mappings(key, mode_array)
+            for keypress, key_data in pairs(key_mappings) do
                 if key_data.isremap then
                   preserve_custom_mappings(key, keypress, key_data.modes)
                 end

@@ -21,11 +21,9 @@ function M.try_delay_keypress(key, keypress)
     current_interval = current_grace_period_intervals[key]
 
     -- ignore user defined patterns
-    for _,ign_ft in ipairs(ignore_filetypes) do
-        if vim.o.filetype:match(ign_ft) then
-            M.send_keypress(keypress)
-            return
-        end
+    if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
+        M.send_keypress(keypress)
+        return
     end
 
     -- Ingore on macro execution
